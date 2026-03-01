@@ -1,0 +1,134 @@
+<%- include('partials/header') %>
+
+<div class="container">
+
+    <!-- ── Page Title + Add Button ── -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Products</h2>
+        <a href="/products/add" class="btn btn-success">+ Add Product</a>
+    </div>
+
+    <!-- ── Success / Error Messages ── -->
+    <% if (successMessage) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= successMessage %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <!-- ── Products Table ── -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Category ID</th>
+                        <th>Category Name</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Loop through products array sent from the route -->
+                    <% if (products.length === 0) { %>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No products added yet. 
+                                <a href="/products/add">Add one now!</a>
+                            </td>
+                        </tr>
+                    <% } %>
+
+                    <% products.forEach(function(product, index) { %>
+                        <tr>
+                            <!-- Row number: calculate real position across pages -->
+                            <td class="text-muted">
+                                <%= (pagination.currentPage - 1) * pagination.pageSize + index + 1 %>
+                            </td>
+                            <td><%= product.ProductId %></td>
+                            <td><strong><%= product.ProductName %></strong></td>
+                            <td><span class="badge bg-secondary"><%= product.CategoryId %></span></td>
+                            <td><%= product.CategoryName %></td>
+                            <td class="text-center">
+                                <!-- Edit Button -->
+                                <a 
+                                    href="/products/edit/<%= product.ProductId %>" 
+                                    class="btn btn-warning btn-sm me-1"
+                                >
+                                    ✏️ Edit
+                                </a>
+                                <!-- Delete Button — uses a small form to send DELETE-like POST -->
+                                <form 
+                                    action="/products/delete/<%= product.ProductId %>" 
+                                    method="POST" 
+                                    style="display:inline"
+                                    onsubmit="return confirm('Delete <%= product.ProductName %>?')"
+                                >
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Pagination Controls ── -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+
+        <!-- Summary text: e.g. "Showing page 1 of 3 (23 products)" -->
+        <p class="text-muted mb-0">
+            Page <strong><%= pagination.currentPage %></strong> 
+            of <strong><%= pagination.totalPages %></strong>
+            &nbsp;·&nbsp;
+            <span class="text-secondary"><%= pagination.totalProducts %> total products</span>
+        </p>
+
+        <!-- Prev / Next Buttons -->
+        <div>
+            <!-- Previous button — disabled on first page -->
+            <% if (pagination.hasPrevPage) { %>
+                <a 
+                    href="/products?page=<%= pagination.currentPage - 1 %>" 
+                    class="btn btn-outline-primary btn-sm me-1"
+                >
+                    ← Previous
+                </a>
+            <% } else { %>
+                <button class="btn btn-outline-primary btn-sm me-1" disabled>
+                    ← Previous
+                </button>
+            <% } %>
+
+            <!-- Next button — disabled on last page -->
+            <% if (pagination.hasNextPage) { %>
+                <a 
+                    href="/products?page=<%= pagination.currentPage + 1 %>" 
+                    class="btn btn-outline-primary btn-sm"
+                >
+                    Next →
+                </a>
+            <% } else { %>
+                <button class="btn btn-outline-primary btn-sm" disabled>
+                    Next →
+                </button>
+            <% } %>
+        </div>
+
+    </div>
+    <!-- ── End Pagination ── -->
+
+</div>
+
+<!-- Bootstrap JS (needed for dismiss alerts) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
