@@ -1,0 +1,100 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <!-- ── Card wrapping the form ── -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <!-- isEdit is passed from the route: true = Edit, false = Add -->
+                    <h5 class="mb-0">
+                        <% if (isEdit) { %>
+                            ✏️ Edit Product
+                        <% } else { %>
+                            ➕ Add New Product
+                        <% } %>
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- 
+                        Form action changes based on Add vs Edit:
+                        Add  → POST /products
+                        Edit → POST /products/update/:id
+                    -->
+                    <form 
+                        action="<% if (isEdit) { %>/products/update/<%= product.ProductId %><% } else { %>/products<% } %>" 
+                        method="POST"
+                    >
+
+                        <!-- ── Product Name Field ── -->
+                        <div class="mb-3">
+                            <label for="ProductName" class="form-label fw-semibold">
+                                Product Name <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="ProductName" 
+                                name="ProductName"
+                                placeholder="Enter product name"
+                                <!-- Pre-fill value when editing -->
+                                value="<% if (isEdit) { %><%= product.ProductName %><% } %>"
+                                required
+                            >
+                        </div>
+
+                        <!-- ── Category Dropdown ── -->
+                        <div class="mb-3">
+                            <label for="CategoryId" class="form-label fw-semibold">
+                                Category <span class="text-danger">*</span>
+                            </label>
+                            <select 
+                                class="form-select" 
+                                id="CategoryId" 
+                                name="CategoryId" 
+                                required
+                            >
+                                <option value="">-- Select a Category --</option>
+
+                                <!-- Loop through categories fetched from DB -->
+                                <% categories.forEach(function(cat) { %>
+                                    <option 
+                                        value="<%= cat.CategoryId %>"
+                                        <!-- Mark as selected if editing and IDs match -->
+                                        <%= (isEdit && product.CategoryId === cat.CategoryId) ? 'selected' : '' %>
+                                    >
+                                        <%= cat.CategoryName %>
+                                    </option>
+                                <% }) %>
+
+                            </select>
+                        </div>
+
+                        <!-- ── Form Buttons ── -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <% if (isEdit) { %>
+                                    💾 Update Product
+                                <% } else { %>
+                                    ➕ Add Product
+                                <% } %>
+                            </button>
+                            <!-- Cancel goes back to product list -->
+                            <a href="/products" class="btn btn-secondary">Cancel</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <!-- ── End Card ── -->
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
